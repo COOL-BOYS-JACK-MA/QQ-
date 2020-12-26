@@ -7,5 +7,5 @@ package后的jar包直接丢到Linux主机上就可以啦；
 
 >运行
 
-重要需要参数，这些参数在configure.properties中配置
+==重要需要参数，这些参数在configure.properties中配置==
 
