@@ -1,6 +1,7 @@
 package util;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang3.text.StrBuilder;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -14,20 +15,19 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class InitUtil {
     //js执行引擎
     public static ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
     //直接F12复制你的请求url传进去就行
-    public static String uri = "https://user.qzone.qq.com/proxy/domain/w.qzone.qq.com/cgi-bin/likes/internal_dolike_app?g_tk=548294653";
+    public static String uri = "https://user.qzone.qq.com/proxy/domain/ic2.qzone.qq.com/cgi-bin/feeds/feeds3_html_more";
 
     //直接F12复制你的请求头传进函数里就行
     public static Map<String, String> headers = InitUtil.getHeaderOrFormDataMap(
-            "cookie: pgv_pvi=7347086336; pgv_pvid=1001896312; RK=PqpAHsCHGn; ptcz=0eb06414f594e28d65ebcb72085c371dbb8fd7e0d39e0bf8ab3cbfdad63befc1; qz_screen=1920x1080; QZ_FE_WEBP_SUPPORT=1; __Q_w_s__QZN_TodoMsgCnt=1; Loading=Yes; __layoutStat=29; __Q_w_s_hat_seed=1; ptui_loginuin=1124209551; _qpsvr_localtk=0.6984470103132014; pgv_info=ssid=s8457721243; uin=o1124209551; skey=@6ug8cVCji; p_uin=o1124209551; pt4_token=G8ECSUEfCdR9QqR8Sx3aWoFmKGpOw3SDvsa-zLO4OrQ_; p_skey=JdIZ6nFY0PUplRUUGiX256g-sc1P4Jo7RRVIUnTuUeU_; x-stgw-ssl-info=e0460cd5991ed72d569ec1e7ab98f4aa|0.134|-|1|.|Y|TLSv1.2|ECDHE-RSA-AES128-GCM-SHA256|13500|h2|0; cpu_performance_v8=33\n" +
+            "cookie: pgv_pvi=7672666112; RK=vioAGuC2EF; ptcz=715daf50b4092dd8266c1e891f0a18ebb6c18b2572b627cfb97dce7b3f76991a; pgv_pvid=5736518295; tvfe_boss_uuid=6aee9dab9aff1a20; qz_screen=1920x1080; QZ_FE_WEBP_SUPPORT=1; __Q_w_s__QZN_TodoMsgCnt=1; o_cookie=1124209551; pac_uid=1_1124209551; cpu_performance_v8=1; scstat=28; _qpsvr_localtk=0.6384450922137326; uin=o1124209551; skey=@2GpMMJY7j; p_uin=o1124209551; pt4_token=3wPorJAAp2WRc-faoLzMnUT*8NHcje0hBRqsyP8Z1AQ_; p_skey=HPIp7f8EExkrLNIj1hWJvVhcyg9HEAv*X036xqDsZlM_; Loading=Yes; pgv_info=ssid=s3023729374\n" +
                     "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"
     );
 
@@ -48,27 +48,27 @@ public class InitUtil {
                     "aisortOffset: 0\n" +
                     "getAisort: 0\n" +
                     "aisortBeginTime: 0\n" +
-                    "pagenum: 46\n" +
-                    "externparam: basetime=1607069905&pagenum=46&dayvalue=1&getadvlast=0&hasgetadv=&lastentertime=0&LastAdvPos=0&UnReadCount=0&UnReadSum=363&LastIsADV=0&UpdatedFollowUins=&UpdatedFollowCount=0&LastRecomBrandID=&TRKPreciList=\n" +
+                    "pagenum: 3\n" +
+                    "externparam: basetime=1609227692&pagenum=3&dayvalue=0&getadvlast=1&hasgetadv=&lastentertime=1609234697&LastAdvPos=0&UnReadCount=4&UnReadSum=-1&LastIsADV=1&UpdatedFollowUins=&UpdatedFollowCount=0&LastRecomBrandID=&TRKPreciList=\n" +
                     "firstGetGroup: 0\n" +
                     "icServerTime: 0\n" +
                     "mixnocache: 0\n" +
                     "scene: 0\n" +
-                    "begintime: 1607069905\n" +
+                    "begintime: 1609227692\n" +
                     "count: 10\n" +
-                    "dayspac: 1\n" +
+                    "dayspac: 0\n" +
                     "sidomain: qzonestyle.gtimg.cn\n" +
                     "useutf8: 1\n" +
                     "outputhtmlfeed: 1\n" +
-                    "rd: 0.7871806806906332\n" +
-                    "usertime: 1609234899712\n" +
-                    "windowId: 0.8886017413904825\n" +
-                    "g_tk: 1456495607\n" +
-                    "g_tk: 1456495607"
+                    "rd: 0.31904723711117655\n" +
+                    "usertime: 1609243548907\n" +
+                    "windowId: 0.6744105566418135\n" +
+                    "g_tk: 1846091378\n" +
+                    "g_tk: 1846091378"
     );
 
 
-    //返回headers请求体；
+    //返回请求头或请求体；
     public static Map getHeaderOrFormDataMap(String HeaderOrFormData) {
         HashMap<String, String> headers = new HashMap<>();
         for (String s : HeaderOrFormData.split("\n")) {
@@ -82,18 +82,31 @@ public class InitUtil {
         return headers;
     }
 
+
     //发送post请求
-    public static Boolean postUrl(String uri, Map headers, Map formDatas) throws Exception {
+    public static Document postUrl(String uri, Map headers, Map formDatas) throws Exception {
         Connection connect = Jsoup.connect(uri);
         connect.headers(headers);
-        connect.data(formData);
+        connect.data(formDatas);
         // 带参数结束
-        Element body = connect.ignoreContentType(true).post().body();
-        System.out.println(body);
-        return (body == null || body.equals("")) ? false : true;
+        Document post = connect.ignoreContentType(true).post();
+        return post;
     }
 
-    //设置自定义请求体
+
+    //发送get请求
+    public static Document getUrl(String uri, Map headers, Map formDatas) throws Exception {
+        Connection connect = Jsoup.connect(uri);
+        connect.headers(headers);
+        connect.data(formDatas);
+        // 带参数结束
+        Document document = connect.ignoreContentType(true).get();
+        System.out.println(document);
+        return document;
+    }
+
+
+    //设置自定义请求体map,会覆盖部分原请求体的数据；
     public static void setFormData(Map<String, String> changedFormData) {
         //自定义输入data;
         changedFormData.forEach((key, value) -> {
@@ -101,40 +114,64 @@ public class InitUtil {
         });
     }
 
-    public static String getSalt(String s) throws Exception {
-        engine.eval(new FileReader(System.getProperty("user.dir") + File.separator + "js" + File.separator + "method.js"));
-        Invocable invoke = (Invocable) engine;    // 调用merge方法，并传入两个参数
-        Object c = (Object) invoke.invokeFunction("e", s);
-        return c.toString();
-    }
-
-
-    public static List getFids(int page,int uin) throws Exception {
+    //    传入page和用户qq号，返回说说编号列表；
+    public static Set<String> getFids(int page, String uin) throws Exception {
         String uri = "https://user.qzone.qq.com/proxy/domain/ic2.qzone.qq.com/cgi-bin/feeds/feeds3_html_more";
-        Connection connect = Jsoup.connect(uri);
         HashMap<String, String> map = new HashMap<>();
         map.put("windowId", String.valueOf(Math.random()));
         map.put("rd", String.valueOf(Math.random()));
         map.put("externparam", "");
         map.put("usertime", String.valueOf(System.currentTimeMillis()));
-        connect.data(map);
-        Document post = connect.ignoreContentType(true).get();
-        System.out.println("success" + post.body());
-        return null;
+        map.put("pagenum", String.valueOf(page));
+        map.put("uin", uin);
+        setFormData(map);
+        Document doc = getUrl(uri, headers, formData);
+        Pattern pattern = Pattern.compile("(data-key=\\\\x).{26}");
+        Matcher matcher = pattern.matcher(doc.toString());
+        StrBuilder strBuilder = new StrBuilder();
+        HashSet<String> set = new HashSet<>();
+        while (matcher.find()) {
+            strBuilder.append(matcher.group());
+            strBuilder.replaceAll("data-key=\\x22", "");
+            System.out.println("获得文章编号是" + strBuilder.toString());
+            set.add(strBuilder.toString());
+            strBuilder.clear();
+        }
+        return set;
     }
 
-
-    //js引擎方式调用
-    @Test
-    public void test() throws Exception {
-        engine.eval(new FileReader(System.getProperty("user.dir") + File.separator + "js" + File.separator + "method.js"));
-        Invocable invoke = (Invocable) engine;    // 调用merge方法，并传入两个参数
-        Object c = (Object) invoke.invokeFunction("stack_1", "https://user.qzone.qq.com/proxy/domain/boss.qzone.qq.com/fcg-bin/fcg_get_multiple_strategy?uin=1124209551&board_id=2420&need_cnt=65536");
+    //点赞，完成；
+    public static Boolean doLike() {
+        String uri1 = "https://user.qzone.qq.com/proxy/domain/w.qzone.qq.com/cgi-bin/likes/internal_dolike_app?g_tk=1846091378";
+        Map<String, String> zanformData = InitUtil.getHeaderOrFormDataMap(
+                "qzreferrer: https://user.qzone.qq.com/1124209551\n" +
+                        "opuin: 1124209551\n" +
+                        "unikey: http://user.qzone.qq.com/1304060952/mood/1864ba4d4fd3de5fd40b0700\n" +
+                        "curkey: http://user.qzone.qq.com/1304060952/mood/1864ba4d4fd3de5fd40b0700\n" +
+                        "from: 1\n" +
+                        "appid: 311\n" +
+                        "typeid: 0\n" +
+                        "abstime: 1608438607\n" +
+                        "fid: 1864ba4d4fd3de5fd40b0700\n" +
+                        "active: 0\n" +
+                        "fupdate: 1"
+        );
+        Boolean accessd = true;
+        try {
+            System.out.println(postUrl(uri1, headers, zanformData));
+            System.out.println("success");
+        } catch (Exception e) {
+            System.out.println("啊哦，失败啦");
+            System.out.println(e.getMessage());
+            accessd = false;
+        } finally {
+            return accessd;
+        }
     }
 
     //node.js方式调用
     @Test
     public void test_1() throws Exception {
-
+        System.out.println(doLike());
     }
 }
