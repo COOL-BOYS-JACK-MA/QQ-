@@ -16,6 +16,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class InitUtil {
@@ -26,41 +27,44 @@ public class InitUtil {
 
     //直接F12复制你的请求头传进函数里就行
     public static Map<String, String> headers = InitUtil.getHeaderOrFormDataMap(
-            "authority: user.qzone.qq.com\n" +
-                    "method: POST\n" +
-                    "path: /proxy/domain/w.qzone.qq.com/cgi-bin/likes/internal_dolike_app?g_tk=548294653\n" +
-                    "scheme: https\n" +
-                    "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\n" +
-                    "accept-encoding: gzip, deflate, br\n" +
-                    "accept-language: zh-CN,zh;q=0.9,zh-TW;q=0.8,en;q=0.7\n" +
-                    "cache-control: max-age=0\n" +
-                    "content-length: 335\n" +
-                    "content-type: application/x-www-form-urlencoded\n" +
-                    "cookie: pgv_pvi=7672666112; RK=vioAGuC2EF; ptcz=715daf50b4092dd8266c1e891f0a18ebb6c18b2572b627cfb97dce7b3f76991a; pgv_pvid=5736518295; tvfe_boss_uuid=6aee9dab9aff1a20; qz_screen=1920x1080; QZ_FE_WEBP_SUPPORT=1; __Q_w_s__QZN_TodoMsgCnt=1; o_cookie=1124209551; pac_uid=1_1124209551; pgv_si=s2738489344; _qpsvr_localtk=0.5018834502867462; uin=o1124209551; skey=@emz40ysoT; p_uin=o1124209551; pt4_token=xlnxqPkr2KU3t8*wMZT7emIRgzK15wa7oA0vIpzBfoI_; p_skey=YqoSpgA-hOl9mED7FpOmR8qcrspcVBX2GVIyFHhDGRc_; Loading=Yes; x-stgw-ssl-info=29b0a7fa68ac0f1d48fd0975a1ba79e7|0.137|-|1|.|Y|TLSv1.2|ECDHE-RSA-AES128-GCM-SHA256|13500|h2|0; pgv_info=ssid=s4212518098; cpu_performance_v8=2; rv2=80CFBB060AC12287AFCA42AA2DDF4FBEA0EE7D4CADEC56704C; property20=75EC2D64C9AE5167BDB19B9DD4B10346515FC042D66A1732AE6BAAEA2FB4066BFCBC3367443C2438\n" +
-                    "origin: https://user.qzone.qq.com\n" +
-                    "referer: https://user.qzone.qq.com/1124209551\n" +
-                    "sec-fetch-dest: iframe\n" +
-                    "sec-fetch-mode: navigate\n" +
-                    "sec-fetch-site: same-origin\n" +
-                    "sec-fetch-user: ?1\n" +
-                    "upgrade-insecure-requests: 1\n" +
+            "cookie: pgv_pvi=7347086336; pgv_pvid=1001896312; RK=PqpAHsCHGn; ptcz=0eb06414f594e28d65ebcb72085c371dbb8fd7e0d39e0bf8ab3cbfdad63befc1; qz_screen=1920x1080; QZ_FE_WEBP_SUPPORT=1; __Q_w_s__QZN_TodoMsgCnt=1; Loading=Yes; __layoutStat=29; __Q_w_s_hat_seed=1; ptui_loginuin=1124209551; _qpsvr_localtk=0.6984470103132014; pgv_info=ssid=s8457721243; uin=o1124209551; skey=@6ug8cVCji; p_uin=o1124209551; pt4_token=G8ECSUEfCdR9QqR8Sx3aWoFmKGpOw3SDvsa-zLO4OrQ_; p_skey=JdIZ6nFY0PUplRUUGiX256g-sc1P4Jo7RRVIUnTuUeU_; x-stgw-ssl-info=e0460cd5991ed72d569ec1e7ab98f4aa|0.134|-|1|.|Y|TLSv1.2|ECDHE-RSA-AES128-GCM-SHA256|13500|h2|0; cpu_performance_v8=33\n" +
                     "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"
     );
 
 
     //直接F12复制你的请求体数据传进去就行
     public static Map<String, String> formData = InitUtil.getHeaderOrFormDataMap(
-            "qzreferrer: https://user.qzone.qq.com/1124209551\n" +
-                    "opuin: 1124209551\n" +
-                    "unikey: http://user.qzone.qq.com/1173290080/mood/60fcee453148e85f18a80100\n" +
-                    "curkey: http://user.qzone.qq.com/1173290080/mood/60fcee453148e85f18a80100\n" +
-                    "from: 1\n" +
-                    "appid: 311\n" +
-                    "typeid: 0\n" +
-                    "abstime: 1609058353\n" +
-                    "fid: 60fcee453148e85f18a80100\n" +
-                    "active: 0\n" +
-                    "fupdate: 1"
+            "uin: 1124209551\n" +
+                    "scope: 0\n" +
+                    "view: 1\n" +
+                    "daylist: \n" +
+                    "uinlist: \n" +
+                    "gid: \n" +
+                    "flag: 1\n" +
+                    "filter: all\n" +
+                    "applist: all\n" +
+                    "refresh: 0\n" +
+                    "aisortEndTime: 0\n" +
+                    "aisortOffset: 0\n" +
+                    "getAisort: 0\n" +
+                    "aisortBeginTime: 0\n" +
+                    "pagenum: 46\n" +
+                    "externparam: basetime=1607069905&pagenum=46&dayvalue=1&getadvlast=0&hasgetadv=&lastentertime=0&LastAdvPos=0&UnReadCount=0&UnReadSum=363&LastIsADV=0&UpdatedFollowUins=&UpdatedFollowCount=0&LastRecomBrandID=&TRKPreciList=\n" +
+                    "firstGetGroup: 0\n" +
+                    "icServerTime: 0\n" +
+                    "mixnocache: 0\n" +
+                    "scene: 0\n" +
+                    "begintime: 1607069905\n" +
+                    "count: 10\n" +
+                    "dayspac: 1\n" +
+                    "sidomain: qzonestyle.gtimg.cn\n" +
+                    "useutf8: 1\n" +
+                    "outputhtmlfeed: 1\n" +
+                    "rd: 0.7871806806906332\n" +
+                    "usertime: 1609234899712\n" +
+                    "windowId: 0.8886017413904825\n" +
+                    "g_tk: 1456495607\n" +
+                    "g_tk: 1456495607"
     );
 
 
@@ -68,7 +72,12 @@ public class InitUtil {
     public static Map getHeaderOrFormDataMap(String HeaderOrFormData) {
         HashMap<String, String> headers = new HashMap<>();
         for (String s : HeaderOrFormData.split("\n")) {
-            headers.put(s.split(":\\s")[0], s.split(":\\s")[1]);
+            if (s.split(":\\s").length == 1) {
+                headers.put(s.split(":\\s")[0], "");
+                continue;
+            }
+            String key = s.split(":\\s")[0], val = s.split(":\\s")[1];
+            headers.put(key, val);
         }
         return headers;
     }
@@ -99,6 +108,23 @@ public class InitUtil {
         return c.toString();
     }
 
+
+    public static List getFids(int page,int uin) throws Exception {
+        String uri = "https://user.qzone.qq.com/proxy/domain/ic2.qzone.qq.com/cgi-bin/feeds/feeds3_html_more";
+        Connection connect = Jsoup.connect(uri);
+        HashMap<String, String> map = new HashMap<>();
+        map.put("windowId", String.valueOf(Math.random()));
+        map.put("rd", String.valueOf(Math.random()));
+        map.put("externparam", "");
+        map.put("usertime", String.valueOf(System.currentTimeMillis()));
+        connect.data(map);
+        Document post = connect.ignoreContentType(true).get();
+        System.out.println("success" + post.body());
+        return null;
+    }
+
+
+    //js引擎方式调用
     @Test
     public void test() throws Exception {
         engine.eval(new FileReader(System.getProperty("user.dir") + File.separator + "js" + File.separator + "method.js"));
@@ -106,4 +132,9 @@ public class InitUtil {
         Object c = (Object) invoke.invokeFunction("stack_1", "https://user.qzone.qq.com/proxy/domain/boss.qzone.qq.com/fcg-bin/fcg_get_multiple_strategy?uin=1124209551&board_id=2420&need_cnt=65536");
     }
 
+    //node.js方式调用
+    @Test
+    public void test_1() throws Exception {
+
+    }
 }
