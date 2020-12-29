@@ -1,3 +1,7 @@
+module.exports = {
+    stack_1, get, URI, getType, _DJB
+}
+
 function stack_1(e) {
     e = URI(e);
     var t;
@@ -19,10 +23,13 @@ function stack_1(e) {
 }
 
 function get(e) {
+    var cookie = ""
     var t = new RegExp("(?:^|;+|\\s+)" + e + "=([^;]*)")
-        , n = document.cookie.match(t);
+    var n = cookie.match(t);
+    console.log(n);
     return !n ? "" : n[1]
 }
+
 
 function URI(e) {
     if (!(getType(e) == "string")) {
@@ -78,8 +85,4 @@ function _DJB(e) {
 
 function add(a, b) {
     return a + b;
-}
-
-module.exports = {
-    add
 }
