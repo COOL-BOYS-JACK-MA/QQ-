@@ -27,7 +27,7 @@ public class InitUtil {
 
     //直接F12复制你的请求头传进函数里就行
     public static Map<String, String> headers = InitUtil.getHeaderOrFormDataMap(
-            "cookie: pgv_pvi=7672666112; RK=vioAGuC2EF; ptcz=715daf50b4092dd8266c1e891f0a18ebb6c18b2572b627cfb97dce7b3f76991a; pgv_pvid=5736518295; tvfe_boss_uuid=6aee9dab9aff1a20; qz_screen=1920x1080; QZ_FE_WEBP_SUPPORT=1; __Q_w_s__QZN_TodoMsgCnt=1; o_cookie=1124209551; pac_uid=1_1124209551; cpu_performance_v8=1; scstat=28; _qpsvr_localtk=0.6384450922137326; uin=o1124209551; skey=@2GpMMJY7j; p_uin=o1124209551; pt4_token=3wPorJAAp2WRc-faoLzMnUT*8NHcje0hBRqsyP8Z1AQ_; p_skey=HPIp7f8EExkrLNIj1hWJvVhcyg9HEAv*X036xqDsZlM_; Loading=Yes; pgv_info=ssid=s3023729374\n" +
+            "cookie: pgv_pvi=7347086336; pgv_pvid=1001896312; RK=PqpAHsCHGn; ptcz=0eb06414f594e28d65ebcb72085c371dbb8fd7e0d39e0bf8ab3cbfdad63befc1; qz_screen=1920x1080; QZ_FE_WEBP_SUPPORT=1; __Q_w_s__QZN_TodoMsgCnt=1; __Q_w_s_hat_seed=1; ptui_loginuin=1124209551; _qpsvr_localtk=0.5580919956107437; pgv_info=ssid=s7570832874; uin=o1124209551; skey=@fJMIo3xfB; p_uin=o1124209551; pt4_token=7inBc53O*QlyKguRDyUFJnzbwrjcMELFHgYqUBPeYH8_; p_skey=nN9hvKUT*An6tFDEto1SFjFwcjfc9etTKEIOmw7joRw_; Loading=Yes; cpu_performance_v8=42; x-stgw-ssl-info=7299119dc1827669654754cd38f97ed3|0.214|-|1|.|Y|TLSv1.2|ECDHE-RSA-AES128-GCM-SHA256|8000|h2|0\n" +
                     "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"
     );
 
@@ -48,23 +48,23 @@ public class InitUtil {
                     "aisortOffset: 0\n" +
                     "getAisort: 0\n" +
                     "aisortBeginTime: 0\n" +
-                    "pagenum: 3\n" +
-                    "externparam: basetime=1609227692&pagenum=3&dayvalue=0&getadvlast=1&hasgetadv=&lastentertime=1609234697&LastAdvPos=0&UnReadCount=4&UnReadSum=-1&LastIsADV=1&UpdatedFollowUins=&UpdatedFollowCount=0&LastRecomBrandID=&TRKPreciList=\n" +
+                    "pagenum: 2\n" +
+                    "externparam: \n" +
                     "firstGetGroup: 0\n" +
                     "icServerTime: 0\n" +
                     "mixnocache: 0\n" +
                     "scene: 0\n" +
-                    "begintime: 1609227692\n" +
+                    "begintime: 1609254457\n" +
                     "count: 10\n" +
                     "dayspac: 0\n" +
                     "sidomain: qzonestyle.gtimg.cn\n" +
                     "useutf8: 1\n" +
                     "outputhtmlfeed: 1\n" +
-                    "rd: 0.31904723711117655\n" +
-                    "usertime: 1609243548907\n" +
-                    "windowId: 0.6744105566418135\n" +
-                    "g_tk: 1846091378\n" +
-                    "g_tk: 1846091378"
+                    "rd: 0.2942543076090369\n" +
+                    "usertime: 1609319358471\n" +
+                    "windowId: 0.7230321091338092\n" +
+                    "g_tk: 430156626\n" +
+                    "g_tk: 430156626"
     );
 
 
@@ -118,12 +118,12 @@ public class InitUtil {
     public static Set<String> getFids(int page, String uin) throws Exception {
         String uri = "https://user.qzone.qq.com/proxy/domain/ic2.qzone.qq.com/cgi-bin/feeds/feeds3_html_more";
         HashMap<String, String> map = new HashMap<>();
-        map.put("windowId", String.valueOf(Math.random()));
-        map.put("rd", String.valueOf(Math.random()));
-        map.put("externparam", "");
-        map.put("usertime", String.valueOf(System.currentTimeMillis()));
+//        map.put("windowId", String.valueOf(Math.random()));
+//        map.put("rd", String.valueOf(Math.random()));
+//        map.put("usertime", String.valueOf(System.currentTimeMillis()));
         map.put("pagenum", String.valueOf(page));
         map.put("uin", uin);
+        map.put("dayspac", "0");
         setFormData(map);
         Document doc = getUrl(uri, headers, formData);
         Pattern pattern = Pattern.compile("(data-key=\\\\x).{26}");
@@ -172,6 +172,6 @@ public class InitUtil {
     //node.js方式调用
     @Test
     public void test_1() throws Exception {
-        System.out.println(doLike());
+        getFids(3, "1124209551");
     }
 }
