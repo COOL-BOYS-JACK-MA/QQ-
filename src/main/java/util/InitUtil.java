@@ -17,10 +17,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-
 public class InitUtil {
-    //直接F12复制你的请求头传进函数里就行
+
+
     public static Map<String, String> headers = new HashMap<>();
+
+    static {
+        headers.put("user-agent", ArgsProPerties.user_agent);
+    }
 
     //根据浏览器复制来的数据返回请求头或请求体工具类
     public static Map getHeaderOrFormDataMap(String HeaderOrFormData) {
@@ -57,63 +61,33 @@ public class InitUtil {
         return document;
     }
 
-    //    传入page和用户qq号，返回说说编号列表；1次获取6条，通过循环，自己设置获取的条数
-    public static Set<String> getFids(String qq, int page, String g_tk) throws Exception {
-        String uri = "https://user.qzone.qq.com/proxy/domain/ic2.qzone.qq.com/cgi-bin/feeds/feeds3_html_more";
-        Map<String, String> formData = InitUtil.getHeaderOrFormDataMap(
-                "uin: " + qq + "\n" +
-                        "scope: 0\n" +
-                        "view: 1\n" +
-                        "daylist: \n" +
-                        "uinlist: \n" +
-                        "gid: \n" +
-                        "flag: 1\n" +
-                        "filter: all\n" +
-                        "applist: all\n" +
-                        "refresh: 0\n" +
-                        "aisortEndTime: 0\n" +
-                        "aisortOffset: 0\n" +
-                        "getAisort: 0\n" +
-                        "aisortBeginTime: 0\n" +
-                        "pagenum: 3\n" +
-                        "externparam: \n" +
-                        "firstGetGroup: 0\n" +
-                        "icServerTime: 0\n" +
-                        "mixnocache: 0\n" +
-                        "scene: 0\n" +
-                        "begintime: " + "1609325151" + "\n" +
-                        "count: 10\n" +
-                        "dayspac: 0\n" +
-                        "sidomain: qzonestyle.gtimg.cn\n" +
-                        "useutf8: 1\n" +
-                        "outputhtmlfeed: 1\n" +
-                        "rd: 0.31904723711117655\n" +
-                        "usertime: " + System.currentTimeMillis() + "\n" +
-                        "windowId: 0.6744105566418135\n" +
-                        "g_tk: " + g_tk + "\n" +
-                        "g_tk: " + g_tk + "1846091378"
-        );
-        Document doc = getUrl(uri, headers, formData);
-        Pattern pattern = Pattern.compile("(data-key=\\\\x).{26}");
-        Matcher matcher = pattern.matcher(doc.toString());
-        StrBuilder strBuilder = new StrBuilder();
-        HashSet<String> set = new HashSet<>();
-        while (matcher.find()) {
-            strBuilder.append(matcher.group());
-            strBuilder.replaceAll("data-key=\\x22", "");
-            System.out.println("获得文章编号是" + strBuilder.toString());
-            set.add(strBuilder.toString());
-            strBuilder.clear();
-        }
-        return set;
-    }
 
-    //点赞功能；
+    //根据node.js获取token,有java实现的版本,弃用
+//    public static String getToken(String cookie) {
+//        String g_tk = null;
+//        try {
+//            String uri = "http://localhost:8083/getGtk";
+//            Connection connect = Jsoup.connect(uri);
+//            HashMap<String, String> map = new HashMap<>();
+//            map.put("cookie", cookie);
+//            connect.data(map);
+//            Document post = connect.ignoreContentType(true).post();
+//            g_tk = post.body().text();
+//            System.out.println("成功运算出token->" + g_tk);
+//        } catch (Exception e) {
+//            System.out.println("出错啦，请重试");
+//            System.out.println("错误信息->" + e.getMessage());
+//        } finally {
+//            return g_tk;
+//        }
+//    }
+
+    //点赞说说,成功返回true;
     public static Boolean doLike(String qq, String fid, String g_tk) {
         String uri1 = "https://user.qzone.qq.com/proxy/domain/w.qzone.qq.com/cgi-bin/likes/internal_dolike_app?g_tk=" + g_tk;
         Map<String, String> zanformData = InitUtil.getHeaderOrFormDataMap(
                 "qzreferrer: https://user.qzone.qq.com/" + qq + "\n" +
-                        "opuin: 1124209551\n" +
+                        "opuin: " + qq + "\n" +
                         "unikey: http://user.qzone.qq.com/1304060952/mood/" + fid + "\n" +
                         "curkey: http://user.qzone.qq.com/1304060952/mood/" + fid + "\n" +
                         "from: 1\n" +
@@ -137,39 +111,58 @@ public class InitUtil {
         }
     }
 
-    //文件读取根据Key读取Value
-    public static String getValueByKey(String key) {
-        Properties pps = new Properties();
+    //返回qq好友列表
+    public static List getQQNumberList(String qq, String g_tk) {
+        List list = null;
+        Map<String, String> formData = InitUtil.getHeaderOrFormDataMap(
+                "uin: " + qq + "\n" +
+                        "follow_flag: 1\n" +
+                        "groupface_flag: 0\n" +
+                        "fupdate: 1\n" +
+                        "g_tk: " + g_tk + "\n" +
+                        "g_tk: " + g_tk + "\n"
+        );
         try {
-            InputStream in = new BufferedInputStream(new FileInputStream(System.getProperty("user.dir") + File.separator + "configure" + File.separator + "paramter.properties"));
-            pps.load(in);
-            String value = pps.getProperty(key);
-            System.out.println(key + " = " + value);
-            return value;
-
-        } catch (IOException e) {
+            Document data = getUrl("https://user.qzone.qq.com/proxy/domain/r.qzone.qq.com/cgi-bin/tfriend/friend_show_qqfriends.cgi",
+                    headers, formData);
+            System.out.println("qq列表获取成功");
+            JSONObject jsonObject = JSONObject.parseObject(data.body().text());
+            list = (List) jsonObject.getJSONObject("data").get("items");
+        } catch (Exception e) {
             e.printStackTrace();
-            return null;
+        } finally {
+            return list;
         }
     }
 
-    //获取token
-    public static String getToken(String cookie) {
-        String g_tk = null;
+    //获取说说列表
+    public static String getArticleNumberLis(String tarQQ, String selfQQ, String g_tk) {
+        String number = null;
+        Map<String, String> formData = InitUtil.getHeaderOrFormDataMap(
+                "g_iframeUser: 1\n" +
+                        "i_uin: " + tarQQ + "\n" +
+                        "i_login_uin: " + selfQQ + "\n" +
+                        "mode: 4\n" +
+                        "previewV8: 1\n" +
+                        "style: 35\n" +
+                        "version: 8\n" +
+                        "needDelOpr: true\n" +
+                        "transparence: true\n" +
+                        "hideExtend: false\n" +
+                        "showcount: 5\n" +
+                        "MORE_FEEDS_CGI: http://ic2.s8.qzone.qq.com/cgi-bin/feeds/feeds_html_act_all\n" +
+                        "refer: 2\n" +
+                        "paramstring: os-winxp|100"
+        );
         try {
-            String uri = "http://localhost:8083/getGtk";
-            Connection connect = Jsoup.connect(uri);
-            HashMap<String, String> map = new HashMap<>();
-            map.put("cookie", cookie);
-            connect.data(map);
-            Document post = connect.ignoreContentType(true).post();
-            g_tk = post.body().text();
-            System.out.println("成功运算出token->" + g_tk);
+            Document data = getUrl("tps://user.qzone.qq.com/proxy/domain/ic2.qzone.qq.com/cgi-bin/feeds/feeds_html_module", headers, formData);
+            String text = data.body().text();
+            int sta = text.indexOf("key:'") + "key:'".length();
+            number = text.substring(sta, sta + "3a3bc5cc4833e45f3bef0500".length());
         } catch (Exception e) {
-            System.out.println("出错啦，请重试");
-            System.out.println("错误信息->" + e.getMessage());
+            e.printStackTrace();
         } finally {
-            return g_tk;
+            return number;
         }
     }
 }
