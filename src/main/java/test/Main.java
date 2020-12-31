@@ -14,7 +14,9 @@ import java.util.Map;
 //测试主函数
 public class Main {
 
-
+    public static void main(String[] args) {
+        System.out.println("sucess");
+    }
 
 
     @Test
