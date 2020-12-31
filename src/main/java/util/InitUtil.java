@@ -1,11 +1,13 @@
 package util;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.text.StrBuilder;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.junit.Test;
 
 import javax.script.Invocable;
@@ -24,6 +26,7 @@ public class InitUtil {
 
     static {
         headers.put("user-agent", ArgsProPerties.user_agent);
+        headers.put("cookie", ArgsProPerties.cookie);
     }
 
     //根据浏览器复制来的数据返回请求头或请求体工具类
@@ -122,11 +125,13 @@ public class InitUtil {
                         "g_tk: " + g_tk + "\n" +
                         "g_tk: " + g_tk + "\n"
         );
+
         try {
             Document data = getUrl("https://user.qzone.qq.com/proxy/domain/r.qzone.qq.com/cgi-bin/tfriend/friend_show_qqfriends.cgi",
                     headers, formData);
             System.out.println("qq列表获取成功");
-            JSONObject jsonObject = JSONObject.parseObject(data.body().text());
+            String s = data.body().text();
+            JSONObject jsonObject = JSONObject.parseObject(s.substring(s.indexOf("_Callback(") + "_Callback(".length(), s.length() - 3));
             list = (List) jsonObject.getJSONObject("data").get("items");
         } catch (Exception e) {
             e.printStackTrace();
@@ -135,8 +140,8 @@ public class InitUtil {
         }
     }
 
-    //获取说说列表
-    public static String getArticleNumberLis(String tarQQ, String selfQQ, String g_tk) {
+    //获取目标qq说说第一个编号ID
+    public static String getArticleNumber(String tarQQ, String selfQQ, String g_tk) {
         String number = null;
         Map<String, String> formData = InitUtil.getHeaderOrFormDataMap(
                 "g_iframeUser: 1\n" +
@@ -155,10 +160,11 @@ public class InitUtil {
                         "paramstring: os-winxp|100"
         );
         try {
-            Document data = getUrl("tps://user.qzone.qq.com/proxy/domain/ic2.qzone.qq.com/cgi-bin/feeds/feeds_html_module", headers, formData);
-            String text = data.body().text();
-            int sta = text.indexOf("key:'") + "key:'".length();
-            number = text.substring(sta, sta + "3a3bc5cc4833e45f3bef0500".length());
+            Document data = getUrl("https://user.qzone.qq.com/proxy/domain/ic2.qzone.qq.com/cgi-bin/feeds/feeds_html_module", headers, formData);
+            Elements e = data.getElementsByTag("script");
+            String[] vars = e.get(1).data().split("var");
+//            int sta = text.indexOf("key:'") + "key:'".length();
+//            number = text.substring(sta, sta + "3a3bc5cc4833e45f3bef0500".length());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

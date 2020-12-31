@@ -1,5 +1,7 @@
+import com.alibaba.fastjson.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import org.junit.Test;
 import util.ArgsProPerties;
 import util.InitUtil;
 
@@ -16,9 +18,17 @@ public class Main {
         //获取说说id
         for (int i = 0; i < qqNumberList.size(); i++) {
             Map friend = (Map) qqNumberList.get(i);
-            String fid = (String) friend.get("uin");
+            String tarQQ = friend.get("uin").toString();
+            String fid = InitUtil.getArticleNumber(tarQQ, ArgsProPerties.qq, ArgsProPerties.g_tk);
             Boolean hasSend = InitUtil.doLike(ArgsProPerties.qq, fid, ArgsProPerties.g_tk);
         }
         System.out.println("耗时" + (System.currentTimeMillis() - startTime));
+    }
+
+
+    //执行到这步啦;获取说说ID;
+    @Test
+    public void Test() {
+        InitUtil.getArticleNumber("804301822", ArgsProPerties.qq, ArgsProPerties.g_tk);
     }
 }
