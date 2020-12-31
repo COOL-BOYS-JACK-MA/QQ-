@@ -9,14 +9,15 @@ var app = express()
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-app.post('/getGtk', function (req, res) {
+app.post('/add', function (req, res) {
     var body = req.body
-    console.log(baiDuFanYi.stack_1(body.cookie))
-    res.send(baiDuFanYi.stack_1(body.cookie) + "")
+    console.log(baiDuFanYi.stack_1(body.e))
+    res.send(baiDuFanYi.stack_1(body.e)+"")
     res.end()
 })
 
 app.post('/test', function (req, res) {
+
     var body = req.body
     console.log('接受到请求')
     baiDuFanYi.do1()
