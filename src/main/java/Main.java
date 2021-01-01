@@ -7,6 +7,8 @@ import util.InitUtil;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
 
@@ -20,7 +22,7 @@ public class Main {
             Map friend = (Map) qqNumberList.get(i);
             String tarQQ = friend.get("uin").toString();
             String fid = InitUtil.getArticleNumber(tarQQ, ArgsProPerties.qq, ArgsProPerties.g_tk);
-            Boolean hasSend = InitUtil.doLike(ArgsProPerties.qq, fid, ArgsProPerties.g_tk);
+            Boolean hasSend = InitUtil.doLike(tarQQ, ArgsProPerties.qq, fid, ArgsProPerties.g_tk);
         }
         System.out.println("耗时" + (System.currentTimeMillis() - startTime));
     }
@@ -29,6 +31,16 @@ public class Main {
     //执行到这步啦;获取说说ID;
     @Test
     public void Test() {
-        InitUtil.getArticleNumber("804301822", ArgsProPerties.qq, ArgsProPerties.g_tk);
+
+    }
+
+    @Test
+    public void Test1() {
+
+    }
+
+    @Test
+    public void Test2() {
+
     }
 }

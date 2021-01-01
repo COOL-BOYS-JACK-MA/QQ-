@@ -86,13 +86,12 @@ public class InitUtil {
 //    }
 
     //点赞说说,成功返回true;
-    public static Boolean doLike(String qq, String fid, String g_tk) {
+    public static Boolean doLike(String tarQQ, String selfQQ, String fid, String g_tk) {
         String uri1 = "https://user.qzone.qq.com/proxy/domain/w.qzone.qq.com/cgi-bin/likes/internal_dolike_app?g_tk=" + g_tk;
         Map<String, String> zanformData = InitUtil.getHeaderOrFormDataMap(
-                "qzreferrer: https://user.qzone.qq.com/" + qq + "\n" +
-                        "opuin: " + qq + "\n" +
-                        "unikey: http://user.qzone.qq.com/1304060952/mood/" + fid + "\n" +
-                        "curkey: http://user.qzone.qq.com/1304060952/mood/" + fid + "\n" +
+                "opuin: " + selfQQ + "\n" +
+                        "unikey: http://user.qzone.qq.com/" + tarQQ + "/mood/" + fid + "\n" +
+                        "curkey: http://user.qzone.qq.com/" + tarQQ + "/mood/" + fid + "\n" +
                         "from: 1\n" +
                         "appid: 311\n" +
                         "typeid: 0\n" +
@@ -162,7 +161,12 @@ public class InitUtil {
         try {
             Document data = getUrl("https://user.qzone.qq.com/proxy/domain/ic2.qzone.qq.com/cgi-bin/feeds/feeds_html_module", headers, formData);
             Elements e = data.getElementsByTag("script");
-            String[] vars = e.get(1).data().split("var");
+            Pattern p = Pattern.compile("(?:key:')(\\w+)'");
+            Matcher m = p.matcher(e.get(1).toString());
+
+            if (m.find())
+                number = m.group(1);
+            System.out.println(number);
 //            int sta = text.indexOf("key:'") + "key:'".length();
 //            number = text.substring(sta, sta + "3a3bc5cc4833e45f3bef0500".length());
         } catch (Exception e) {
