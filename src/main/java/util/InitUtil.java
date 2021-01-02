@@ -21,12 +21,28 @@ import java.util.regex.Pattern;
 
 public class InitUtil {
 
-
+    //请求头
     public static Map<String, String> headers = new HashMap<>();
+    //异常处理类
+    public static UnexpectedOfSelfException excep = new UnexpectedOfSelfException();
+    //统计重复点赞说说ID
+    public static Map<String, String> repeatTitleMap = new HashMap<>();
 
     static {
         headers.put("user-agent", ArgsProPerties.user_agent);
         headers.put("cookie", ArgsProPerties.cookie);
+        File file = new File(System.getProperty("user.dir") + File.separator + "properties");
+        try {
+            for (File listFile : file.listFiles()) {
+                if (listFile.getName().equals("cunDang.txt")) {
+                    repeatTitleMap = read();
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            excep.doSomething();
+            e.printStackTrace();
+        }
     }
 
     //根据浏览器复制来的数据返回请求头或请求体工具类
@@ -44,78 +60,44 @@ public class InitUtil {
     }
 
     //发送post请求
-    public static Document postUrl(String uri, Map headers, Map formDatas) throws Exception {
-        Connection connect = Jsoup.connect(uri);
-        connect.headers(headers);
-        connect.data(formDatas);
-        // 带参数结束
-        Document post = connect.ignoreContentType(true).post();
-        return post;
+    public static Document postUrl(String uri, Map headers, Map formDatas) {
+        Document post = null;
+        try {
+            Connection connect = Jsoup.connect(uri);
+            connect.headers(headers);
+            connect.data(formDatas);
+            // 带参数结束
+            post = connect.ignoreContentType(true).post();
+            return post;
+        } catch (Exception e) {
+            excep.doSomething();
+            e.printStackTrace();
+        } finally {
+            return post;
+        }
     }
 
     //发送get请求
-    public static Document getUrl(String uri, Map headers, Map formDatas) throws Exception {
-        Connection connect = Jsoup.connect(uri);
-        connect.headers(headers);
-        connect.data(formDatas);
-        // 带参数结束
-        Document document = connect.ignoreContentType(true).get();
-        System.out.println(document);
-        return document;
-    }
-
-
-    //根据node.js获取token,有java实现的版本,弃用
-//    public static String getToken(String cookie) {
-//        String g_tk = null;
-//        try {
-//            String uri = "http://localhost:8083/getGtk";
-//            Connection connect = Jsoup.connect(uri);
-//            HashMap<String, String> map = new HashMap<>();
-//            map.put("cookie", cookie);
-//            connect.data(map);
-//            Document post = connect.ignoreContentType(true).post();
-//            g_tk = post.body().text();
-//            System.out.println("成功运算出token->" + g_tk);
-//        } catch (Exception e) {
-//            System.out.println("出错啦，请重试");
-//            System.out.println("错误信息->" + e.getMessage());
-//        } finally {
-//            return g_tk;
-//        }
-//    }
-
-    //点赞说说,成功返回true;
-    public static Boolean doLike(String tarQQ, String selfQQ, String fid, String g_tk) {
-        String uri1 = "https://user.qzone.qq.com/proxy/domain/w.qzone.qq.com/cgi-bin/likes/internal_dolike_app?g_tk=" + g_tk;
-        Map<String, String> zanformData = InitUtil.getHeaderOrFormDataMap(
-                "opuin: " + selfQQ + "\n" +
-                        "unikey: http://user.qzone.qq.com/" + tarQQ + "/mood/" + fid + "\n" +
-                        "curkey: http://user.qzone.qq.com/" + tarQQ + "/mood/" + fid + "\n" +
-                        "from: 1\n" +
-                        "appid: 311\n" +
-                        "typeid: 0\n" +
-                        "abstime: " + System.currentTimeMillis() + "\n" +
-                        "fid: " + fid + "\n" +
-                        "active: 0\n" +
-                        "fupdate: 1"
-        );
-        Boolean accessd = true;
+    public static Document getUrl(String uri, Map headers, Map formDatas) {
+        Document document = null;
         try {
-            System.out.println(postUrl(uri1, headers, zanformData));
-            System.out.println("success");
+            Connection connect = Jsoup.connect(uri);
+            connect.headers(headers);
+            connect.data(formDatas);
+            // 带参数结束
+            document = connect.ignoreContentType(true).get();
         } catch (Exception e) {
-            System.out.println("啊哦，失败啦");
-            System.out.println(e.getMessage());
-            accessd = false;
+            excep.doSomething();
+            e.printStackTrace();
         } finally {
-            return accessd;
+            return document;
         }
     }
 
     //返回qq好友列表
     public static List getQQNumberList(String qq, String g_tk) {
         List list = null;
+
         Map<String, String> formData = InitUtil.getHeaderOrFormDataMap(
                 "uin: " + qq + "\n" +
                         "follow_flag: 1\n" +
@@ -128,11 +110,15 @@ public class InitUtil {
         try {
             Document data = getUrl("https://user.qzone.qq.com/proxy/domain/r.qzone.qq.com/cgi-bin/tfriend/friend_show_qqfriends.cgi",
                     headers, formData);
+            //判断是否登录
+            excep.loginException(data);
             System.out.println("qq列表获取成功");
             String s = data.body().text();
             JSONObject jsonObject = JSONObject.parseObject(s.substring(s.indexOf("_Callback(") + "_Callback(".length(), s.length() - 3));
             list = (List) jsonObject.getJSONObject("data").get("items");
         } catch (Exception e) {
+            excep.doSomething();
+            System.out.println("qq列表获取失败，具体错误请查看日志信息");
             e.printStackTrace();
         } finally {
             return list;
@@ -160,19 +146,106 @@ public class InitUtil {
         );
         try {
             Document data = getUrl("https://user.qzone.qq.com/proxy/domain/ic2.qzone.qq.com/cgi-bin/feeds/feeds_html_module", headers, formData);
+            //判断是否登录
+            excep.loginException(data);
             Elements e = data.getElementsByTag("script");
             Pattern p = Pattern.compile("(?:key:')(\\w+)'");
-            Matcher m = p.matcher(e.get(1).toString());
-
+            Matcher m = null;
+            try {
+                //没获取到编号key就是访问被拒绝啦，单独捕获下异常
+                m = p.matcher(e.get(1).toString());
+            } catch (Exception e1) {
+                return null;
+            }
             if (m.find())
                 number = m.group(1);
-            System.out.println(number);
 //            int sta = text.indexOf("key:'") + "key:'".length();
 //            number = text.substring(sta, sta + "3a3bc5cc4833e45f3bef0500".length());
         } catch (Exception e) {
+            excep.doSomething();
             e.printStackTrace();
         } finally {
             return number;
+        }
+    }
+
+    //点赞说说,成功返回true;
+    public static Boolean doLike(String tarQQ, String selfQQ, String fid, String g_tk) {
+        String uri1 = "https://user.qzone.qq.com/proxy/domain/w.qzone.qq.com/cgi-bin/likes/internal_dolike_app?g_tk=" + g_tk;
+        Map<String, String> zanformData = InitUtil.getHeaderOrFormDataMap(
+                "opuin: " + selfQQ + "\n" +
+                        "unikey: http://user.qzone.qq.com/" + tarQQ + "/mood/" + fid + "\n" +
+                        "curkey: http://user.qzone.qq.com/" + tarQQ + "/mood/" + fid + "\n" +
+                        "from: 1\n" +
+                        "appid: 311\n" +
+                        "typeid: 0\n" +
+                        "abstime: " + System.currentTimeMillis() + "\n" +
+                        "fid: " + fid + "\n" +
+                        "active: 0\n" +
+                        "fupdate: 1"
+        );
+        Boolean accessd = true;
+        try {
+            Document data = postUrl(uri1, headers, zanformData);
+            //判断是否登录
+            excep.loginException(data);
+            //到这步的话点赞已经成功
+            repeatTitleMap.put(tarQQ, fid);
+        } catch (Exception e) {
+            excep.doSomething();
+            System.out.println("qq说说点赞失败，具体请看日志信息");
+            e.printStackTrace();
+            accessd = false;
+        } finally {
+            return accessd;
+        }
+    }
+
+    //重复说说统计
+    public static boolean isTitleRepeated(String qq, String fid) {
+        if (repeatTitleMap.containsKey(qq) && repeatTitleMap.get(qq).equals(fid)) return true;
+        return false;
+    }
+
+
+    //把点赞过说说ID序列化到硬盘中,为了防止程序出现意外，导致先前点赞过的说说丢失；
+    public static void baocun(Map<String, String> map) {
+        try {
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(System.getProperty("user.dir") + File.separator + "properties" + File.separator + "cunDang.txt"));
+            objectOutputStream.writeObject(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    //读取硬盘说说ID的操作
+    public static Map<String, String> read() {
+        Map<String, String> map = null;
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(System.getProperty("user.dir") + File.separator + "properties" + File.separator + "cunDang.txt"))) {
+            map = (HashMap<String, String>) objectInputStream.readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            return map;
+        }
+    }
+
+
+    //异常处理类
+    public static class UnexpectedOfSelfException {
+        public int errorCounter = 0;
+
+        //cookie失效异常
+        public void loginException(Document document) {
+            if (document.toString().contains("请先登录")) {
+                System.out.println("您的cookie信息已失效或还未设置cookie，请重新登录qq空间获取cookie,程序即将退出");
+                System.exit(-1);
+            }
+        }
+
+        public void doSomething() {
+            errorCounter++;
         }
     }
 }
